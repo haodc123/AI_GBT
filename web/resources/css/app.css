@@ -1,0 +1,39 @@
+#container-wrapper {
+    width: 100%;
+    height: auto;
+    background-color: #ddd;
+}
+ul.item-filter {
+    width: 80%;
+    margin: auto;
+}
+ul.item-filter li {
+    float: left;
+    margin: 20px;
+    list-style: none;
+    cursor: pointer;
+}
+ul.item-filter li.active {
+    font-weight: bolder;
+}
+ul.item-filter li.inactive {
+    font-weight: 100;
+    color: #555;
+}
+
+
+ul.item-list {
+    width: 85%;
+    height: auto;
+    margin: auto;
+    clear: both;
+}
+ul.item-list li {
+    float: left;
+    margin: 20px;
+    list-style: none;
+}
+.load-more {
+    clear: both;
+    margin-left: 40%;
+}
