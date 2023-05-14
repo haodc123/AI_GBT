@@ -59,6 +59,7 @@ class EXCController extends Controller
         ]);
     }
     public function store_file(Request $request) {
+        // dd($request->file('req_content'));
         $path = $request->file('req_content')->store('public/data'); // storage/app/public/data
         return substr($path, strlen('public/data/'));
     }

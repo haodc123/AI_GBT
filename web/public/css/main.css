@@ -4534,3 +4534,7 @@ img.mfp-img {
 	margin: auto;
 	margin-bottom: 20px;
 }
+
+.f-view-file {
+	max-width: 800px !important;
+}

@@ -1,25 +1,99 @@
 @component('components.header')
 @endcomponent
 
+    <style>
+        
+        pre{
+            overflow: auto;
+        }
+        img{
+            max-width: 100%;
+        }
+        
+        label{
+            display: inline-block;
+            width: 60px;
+            margin-top: 10px;
+        }
+        #update{
+            margin: 10px 0 0 60px ;
+            padding: 10px 20px;
+        }
+        
+        #cropped, #cropped-resized{
+            padding: 20px;
+            border: 4px solid #ddd;
+            min-height: 60px;
+            margin-top: 20px;
+        }
+        #cropped img, #cropped-resized img{
+            margin: 5px;
+        }
+
+        
+    </style>
+    
+    <script>
+        var bufferFileName;
+        function onFileChoose() {
+            let f_choose_file = document.querySelector(".f-choose-file");
+            let f_view_file = document.querySelector(".f-view-file");
+            bufferFileName = URL.createObjectURL(f_choose_file.files[0]);
+            f_view_file.setAttribute('src', bufferFileName);
+
+            // Crop feature https://github.com/aewebsolutions/rcrop
+            $('.f-view-file').rcrop({
+                minSize : [150,100],
+                preserveAspectRatio : false,
+                
+                preview : {
+                    display: true,
+                    size : [150,100],
+                    wrapper : '#custom-preview-wrapper'
+                }
+            });
+            
+            $('.f-view-file').on('rcrop-changed', function(){
+                var srcCropped = $(this).rcrop('getDataURL'); // binary value: data:image/png;base64...
+                var srcResized = $(this).rcrop('getDataURL', 50,50);
+                
+                $('#cropped').append('<img src="'+srcCropped+'">');
+                $('#cropped-resized').append('<img src="'+srcResized+'">');
+
+            });
+        }
+    </script>
+    
+
 <div id="blog" class="blog-main pad-top-100 pad-bottom-100 parallax">
 <div class="container">
     <div class="row">
         <div class="col-lg-2 col-md-1 col-sm-1"></div>
         <div class="col-lg-8 col-md-10 col-sm-10 col-xs-12">
-({{ $input_type }})
 @if ($input_type == 'camera')
             <br /><br /><br />
             <h4 class="direct-txt">/ Chụp ảnh Bài tập</h4>
             <br />
 
             <!-- <input type="file" accept="image/*" capture="camera" /> //Only camera -->
-            <form action="{!! route('ocr.upload') !!}" method="post" enctype="multipart/form-data">
+            <form class="f-file" action="{!! route('ocr.upload') !!}" method="post" enctype="multipart/form-data">
                 @csrf
                 Select image or open camera to upload:<br />
-                <input type="file" name="req_content" accept="image/*;capture=camera">
-                <input type="submit" value="Upload Image" name="submit">
-            </form>
+                <input class="f-choose-file" onchange="onFileChoose()" type="file" name="req_content" accept="image/*;capture=camera"><br />
+                
+                <div class="image-wrapper">
+                    <img class="f-view-file" src="" /><br />
+                    <div id="custom-preview-wrapper"></div>
+                    <!-- <div id="cropped-resized">
+                        <h3>Images cropped and resized (50x50)</h3>
+                    </div>
+                    <div id="cropped">
+                        <h3>Images cropped</h3>
+                    </div> -->
+                </div>
 
+                <input type="submit" value="Upload Image" name="submit">
+            </form><br />
 
             <form class="f-input" method="POST" action="{!! route('exc.process', ['input_type' => $input_type]) !!}">
                 @csrf
@@ -61,6 +135,7 @@
     <!-- end container -->
 </div>
     <!-- end blog-main -->
+    
 
     <!-- Use camera stream on browser (not open native camera app) -->
     <!-- https://usefulangle.com/post/352/javascript-capture-image-from-camera -->

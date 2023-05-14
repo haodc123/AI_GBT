@@ -25,6 +25,9 @@ Route::get('blogs/{title}', [BlogsController::class, 'show'])->name('blogs.show'
 
 Route::get('exc/{input_type}', [EXCController::class, 'input'])->name('exc.input');
 Route::post('exc/process/{input_type}', [EXCController::class, 'process'])->name('exc.process');
+// Route::get('exc/{input_type}', function() {
+//     return view('exercises.test');
+// });
 
 Route::post('ocr/upload', [EXCController::class, 'ocr_upload'])->name('ocr.upload');
 Route::post('ocr/api', [EXCController::class, 'ocr_api'])->name('ocr.api');
