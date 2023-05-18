@@ -24,13 +24,15 @@ Route::get('home', function() {
 Route::get('blogs/{title}', [BlogsController::class, 'show'])->name('blogs.show');
 
 Route::get('exc/{input_type}', [EXCController::class, 'input'])->name('exc.input');
+
+Route::post('exc/ocr_nc_upload', [EXCController::class, 'ocr_nc_upload'])->name('exc.ocr_nc_upload');
+Route::post('exc/ocr_api_upload', [EXCController::class, 'ocr_api_upload'])->name('exc.ocr_api.upload');
+Route::post('exc/ocr_api', [EXCController::class, 'ocr_api'])->name('exc.ocr_api');
+
 Route::post('exc/process/{input_type}', [EXCController::class, 'process'])->name('exc.process');
 // Route::get('exc/{input_type}', function() {
-//     return view('exercises.test');
+//     return view('exercises.test2');
 // });
-
-Route::post('ocr/upload', [EXCController::class, 'ocr_upload'])->name('ocr.upload');
-Route::post('ocr/api', [EXCController::class, 'ocr_api'])->name('ocr.api');
 
 // Auth::routes();
 // Route::get('logout', function ()

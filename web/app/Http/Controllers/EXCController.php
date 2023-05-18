@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -26,6 +27,48 @@ class EXCController extends Controller
             'input_type' => $input_type
         ]);
     }
+    // Nc: non crop image upload
+    public function ocr_nc_upload(Request $request) {
+        // dd($request->all());
+        $this->validator($request->all())->validate();
+        $imageUrl = $this->store_nc_file($request);
+
+        $ocr_text = $this->ocr_api($imageUrl);
+
+        return view('exercises.input', [
+            'mode' => 'INPUT',
+            'input_type' => 'camera',
+            'ocr_text' => $ocr_text
+        ]);
+    }
+    protected function validator(array $data) {
+        return Validator::make($data, [
+            'req_content' => ['required', 'image']
+        ]);
+    }
+    public function store_nc_file(Request $request) {
+        // dd($request->file('req_content'));
+        $path = $request->file('req_content')->store('public/data'); // storage/app/public/data
+        return substr($path, strlen('public/data/'));
+    }
+    // End Nc
+
+    // Cropped image upload
+    public function ocr_api_upload(Request $request) {
+        if ($request->file('cropped_image')) {
+            $imageUrl = $this->store_file($request);
+            $ocr_text = $this->ocr_api($imageUrl);
+
+            return response()->json(['ocr_text' => $ocr_text], 200);
+        }
+        return response()->json(['message' => 'No image uploaded'], 400);
+    }
+    public function store_file(Request $request) {
+        // dd($request->file('req_content'));
+        $path = $request->file('cropped_image')->store('public/data');
+        return substr($path, strlen('public/data/'));
+    }
+    // End cropped upload
 
     public function process($input_type, Request $request) {
         // dd($request->all());
@@ -53,30 +96,6 @@ class EXCController extends Controller
         return Arr::get($response, 'choices.0.message')['content'];
     }
 
-    protected function validator(array $data) {
-        return Validator::make($data, [
-            'req_content' => ['required', 'image']
-        ]);
-    }
-    public function store_file(Request $request) {
-        // dd($request->file('req_content'));
-        $path = $request->file('req_content')->store('public/data'); // storage/app/public/data
-        return substr($path, strlen('public/data/'));
-    }
-    public function ocr_upload(Request $request) {
-        // dd($request->all());
-        $this->validator($request->all())->validate();
-        $imageUrl = $this->store_file($request);
-
-        $ocr_text = $this->ocr_api($imageUrl);
-
-        return view('exercises.input', [
-            'mode' => 'INPUT',
-            'input_type' => 'camera',
-            'ocr_text' => $ocr_text
-        ]);
-    }
-
     public function ocr_api($file_path) {
         // khởi tạo thư viện
         $imageAnnotator = new ImageAnnotatorClient([
@@ -87,7 +106,7 @@ class EXCController extends Controller
         $imgFile = file_get_contents(self::BASE_PATH_FILE.$file_path, true);
         $ocrImgResult = $imageAnnotator->documentTextDetection($imgFile);
         $annotationsImg = $ocrImgResult->getFullTextAnnotation();
-        $textResultImg = $annotationsImg->getText();
+        $textResultImg = $annotationsImg ? $annotationsImg->getText() : '';
         // -------- end detect file image --------
 
         // -------- detect file pdf --------

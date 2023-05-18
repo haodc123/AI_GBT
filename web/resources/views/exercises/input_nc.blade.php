@@ -1,107 +1,8 @@
 @component('components.header')
 @endcomponent
 
-    <style>
-        
-        pre{
-            overflow: auto;
-        }
-        img{
-            max-width: 100%;
-        }
-        
-        label{
-            display: inline-block;
-            width: 60px;
-            margin-top: 10px;
-        }
-        #update{
-            margin: 10px 0 0 60px ;
-            padding: 10px 20px;
-        }
-        
-        #cropped, #cropped-resized{
-            padding: 20px;
-            border: 4px solid #ddd;
-            min-height: 60px;
-            margin-top: 20px;
-        }
-        #cropped img, #cropped-resized img{
-            margin: 5px;
-        }
-
-        
-    </style>
-    
-    <script>
-        var bufferFileName;
-        var srcCropped;
-        let f_choose_file;
-        let f_view_file;
-        function onFileChoose() {
-            f_choose_file = document.querySelector(".f-choose-file");
-            f_view_file = document.querySelector(".f-view-file");
-            bufferFileName = URL.createObjectURL(f_choose_file.files[0]);
-            f_view_file.setAttribute('src', bufferFileName);
-
-            $('.f-view-file').rcrop('destroy'); // destroy old file
-            // Crop feature https://github.com/aewebsolutions/rcrop
-            $('.f-view-file').rcrop({
-                minSize : [150,100],
-                preserveAspectRatio : false,
-                grid : true,
-                full: true,
-                preview : {
-                    display: true,
-                    size : [150,100],
-                    wrapper : '#custom-preview-wrapper'
-                }
-            });
-            
-            $('.f-view-file').on('rcrop-ready', function(){
-                srcCropped = $(this).rcrop('getDataURL'); // binary value: data:image/png;base64...
-                console.log(srcCropped);
-            });
-            $('.f-view-file').on('rcrop-changed', function(){
-                srcCropped = $(this).rcrop('getDataURL'); // binary value: data:image/png;base64...
-                // $('#cropped-original').append('<img src="'+srcOriginal+'">');
-            });
-        }
-        function dataURLToBlob(dataURL) {
-            const arr = dataURL.split(",");
-            const mime = arr[0].match(/:(.*?);/)[1];
-            const bstr = atob(arr[1]);
-            let n = bstr.length;
-            const u8arr = new Uint8Array(n);
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-            return new Blob([u8arr], { type: mime });
-        }
-        function onUploadBlob(){
-            if (srcCropped == null)
-                srcCropped = $('.f-view-file').rcrop('getDataURL');
-            const blobData = dataURLToBlob(srcCropped);
-
-            const formData = new FormData();
-            formData.append("_token", "{{ csrf_token() }}");
-            formData.append("cropped_image", blobData);
-
-            fetch("../exc/ocr_api_upload", {
-                method: "POST",
-                body: formData,
-            })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Data response: ", data.ocr_text);
-                $('#exc_req_content').val(data.ocr_text);
-            })
-            .catch((error) => {
-                console.error("An error occur on upload: ", error);
-            });
-        }
-    
-    </script>
+    <!-- Old upload image method (Non-crop): just upload after choose file, not crop feature.
+    nc_upload: non-crop upload. -->
     
 
 <div id="blog" class="blog-main pad-top-100 pad-bottom-100 parallax">
@@ -114,20 +15,15 @@
             <h4 class="direct-txt">/ Chụp ảnh Bài tập</h4>
             <br />
 
-            Select image or open camera to upload:<br />
-            <input class="f-choose-file" onchange="onFileChoose()" type="file" name="req_content" accept="image/*;capture=camera"><br />
-            <!-- <input type="file" accept="image/*" capture="camera" /> //Only camera -->
+            <form class="f-file" action="{!! route('exc.ocr_nc_upload') !!}" method="post" enctype="multipart/form-data">
+                @csrf
+                Select image or open camera to upload:<br />
+                <input class="f-choose-file" type="file" name="req_content" accept="image/*;capture=camera"><br />
+                <!-- <input type="file" accept="image/*" capture="camera" /> //Only camera -->
 
-            <div class="image-wrapper">
-                <img class="f-view-file" src="" /><br />
-                <div id="custom-preview-wrapper"></div>
-                <!-- <div id="cropped">
-                    <h3>Images cropped</h3>
-                </div> -->
-            </div>
+                <input type="submit" value="Upload Image" name="submit">
+            </form><br />
 
-            <button onclick="onUploadBlob()" >Upload Image</button>
-            
             <form class="f-input" method="POST" action="{!! route('exc.process', ['input_type' => $input_type]) !!}">
                 @csrf
                 <ul>

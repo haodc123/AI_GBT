@@ -4538,3 +4538,19 @@ img.mfp-img {
 .f-view-file {
 	max-width: 800px !important;
 }
+
+@media all and (max-width: 900px) {
+	.f-view-file {
+		max-width: 650px !important;
+	}
+}
+@media all and (max-width: 600px) {
+	.f-view-file {
+		max-width: 550px !important;
+	}
+}
+@media all and (max-width: 400px) {
+	.f-view-file {
+		max-width: 350px !important;
+	}
+}
