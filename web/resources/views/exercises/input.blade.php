@@ -38,12 +38,16 @@
         var srcCropped;
         let f_choose_file;
         let f_view_file;
+        let loader;
+
         function onFileChoose() {
             f_choose_file = document.querySelector(".f-choose-file");
             f_view_file = document.querySelector(".f-view-file");
+            loader = document.querySelector(".loading");
             bufferFileName = URL.createObjectURL(f_choose_file.files[0]);
             f_view_file.setAttribute('src', bufferFileName);
 
+            $('.step-2').css('visibility', 'visible');
             $('.f-view-file').rcrop('destroy'); // destroy old file
             // Crop feature https://github.com/aewebsolutions/rcrop
             $('.f-view-file').rcrop({
@@ -87,6 +91,8 @@
             formData.append("_token", "{{ csrf_token() }}");
             formData.append("cropped_image", blobData);
 
+            displayLoading();
+
             fetch("../exc/ocr_api_upload", {
                 method: "POST",
                 body: formData,
@@ -94,11 +100,27 @@
             .then((response) => response.json())
             .then((data) => {
                 console.log("Data response: ", data.ocr_text);
+                hideLoading();
+                $('.step-3').css('visibility', 'visible');
                 $('#exc_req_content').val(data.ocr_text);
+                $('#exc_img_path').val(data.image_url);
             })
             .catch((error) => {
                 console.error("An error occur on upload: ", error);
             });
+        }
+
+        // showing loading
+        function displayLoading() {
+            loader.classList.add("display");
+            // to stop loading after some time
+            setTimeout(() => {
+                loader.classList.remove("display");
+            }, 5000);
+        }
+        // hiding loading 
+        function hideLoading() {
+            loader.classList.remove("display");
         }
     
     </script>
@@ -110,56 +132,86 @@
         <div class="col-lg-2 col-md-1 col-sm-1"></div>
         <div class="col-lg-8 col-md-10 col-sm-10 col-xs-12">
 @if ($input_type == 'camera')
-            <br /><br /><br />
-            <h4 class="direct-txt">/ Chụp ảnh Bài tập</h4>
-            <br />
-
-            Select image or open camera to upload:<br />
-            <input class="f-choose-file" onchange="onFileChoose()" type="file" name="req_content" accept="image/*;capture=camera"><br />
-            <!-- <input type="file" accept="image/*" capture="camera" /> //Only camera -->
-
-            <div class="image-wrapper">
-                <img class="f-view-file" src="" /><br />
-                <div id="custom-preview-wrapper"></div>
-                <!-- <div id="cropped">
-                    <h3>Images cropped</h3>
-                </div> -->
-            </div>
-
-            <button onclick="onUploadBlob()" >Upload Image</button>
+        <div id="wrapper-camera">
             
-            <form class="f-input" method="POST" action="{!! route('exc.process', ['input_type' => $input_type]) !!}">
-                @csrf
-                <ul>
-                    <li>
-                        <textarea cols="100" rows="8" name="exc_req_content" id="exc_req_content" placeholder="Nhận dạng Bài tập" required="required">{{ $ocr_text ?? '' }}</textarea>
-                    </li>
-                    <li>
-                        <div class="reserve-book-btn text-center">
-                            <button class="hvr-underline-from-center" type="submit" value="SEND" id="submit">Gửi đi</button>
-                        </div>
-                    </li>
-                </ul>
-            </form>
+            <h4 class="direct-txt">/ Chụp ảnh Bài tập</h4>
+
+            <div class="step-1">
+                <span class="step-number">1</span> <span class="step-title">Chọn ảnh từ camera hoặc thư viện</span><br /><br />
+                <input class="f-choose-file" onchange="onFileChoose()" type="file" name="req_content" accept="image/*;capture=camera"><br />
+                <!-- <input type="file" accept="image/*" capture="camera" /> //Only camera -->
+            </div><br />
+
+            <div class="step-2">
+                <span class="step-number">2</span> <span class="step-title">Cắt ảnh chỉ chứa phần Bài tập để dễ nhận dạng rồi bấm Upload</span><br /><br />
+                <div class="image-wrapper">
+                    <img class="f-view-file" src="" /><br />
+                    <div id="custom-preview-wrapper"></div>
+                    <!-- <div id="cropped">
+                        <h3>Images cropped</h3>
+                    </div> -->
+                </div>
+                <button onclick="onUploadBlob()" >Upload Bài tập</button>
+                <div class="loading"></div>
+            </div>
+            
+            <div class="step-3">
+                <span class="step-number">3</span> <span class="step-title">Xem lại và sửa cho đúng lần cuối rồi Gửi đi</span><br /><br />
+                <form class="f-input" method="POST" action="{!! route('exc.process', ['input_type' => $input_type]) !!}">
+                    @csrf
+                    <ul>
+                        <li>
+                            <input type="hidden" name="exc_img_path" id="exc_img_path" value="">
+                            <textarea cols="100" rows="8" name="exc_req_content" id="exc_req_content" placeholder="Nhận dạng Bài tập" required="required">{{ $ocr_text ?? '' }}</textarea>
+                        </li>
+                        <li>
+                            <select name="exc_req_grade">
+                                <option value="0">Lớp: Chưa phân loại</option>
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}">Lớp {{ $i }}</option>
+                                @endfor
+                            </select>
+                        </li><br />
+                        <li>
+                            <select name="exc_req_subject">
+                                <option value="0">Môn học: Chưa phân loại</option>
+                                @foreach ($list_all_sub as $sub)
+                                    <option value="{{ $sub->id }}">{{ $sub->title }}</option>
+                                @endforeach
+                            </select>
+                        </li><br />
+                        <li>
+                            <div class="reserve-book-btn text-center">
+                                <button class="hvr-underline-from-center" type="submit" value="SEND" id="submit">Gửi đi</button>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
 
 @else
-            <br /><br /><br />
+        <div id="wrapper-type">
+            
             <h4 class="direct-txt">/ Nhập Bài tập</h4>
-            <br />
 
-            <form class="f-input" method="POST" action="{!! route('exc.process', ['input_type' => $input_type]) !!}">
-                @csrf
-                <ul>
-                    <li>
-                        <textarea cols="100" rows="8" name="exc_req_content" id="exc_req_content" placeholder="Nhập Bài tập..." required="required"></textarea>
-                    </li>
-                    <li>
-                        <div class="reserve-book-btn text-center">
-                            <button class="hvr-underline-from-center" type="submit" value="SEND" id="submit">Gửi đi</button>
-                        </div>
-                    </li>
-                </ul>
-            </form>
+            <div>
+                <span class="step-title">Nhập Bài tập và bấm Gửi</span><br /><br />
+                <form class="f-input" method="POST" action="{!! route('exc.process', ['input_type' => $input_type]) !!}">
+                    @csrf
+                    <ul>
+                        <li>
+                            <textarea cols="100" rows="8" name="exc_req_content" id="exc_req_content" placeholder="Nhập Bài tập..." required="required"></textarea>
+                        </li>
+                        <li>
+                            <div class="reserve-book-btn text-center">
+                                <button class="hvr-underline-from-center" type="submit" value="SEND" id="submit">Gửi đi</button>
+                            </div>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
 @endif
         </div> 
     </div>
@@ -223,5 +275,5 @@
     </script> -->
     <!-- End Script part of Use camera stream -->
 
-</body>
-</html>
+@component('components.footer')
+@endcomponent

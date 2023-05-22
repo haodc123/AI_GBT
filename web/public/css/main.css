@@ -3405,6 +3405,10 @@
 				font-size: .8em;
 			}
 
+		#header ul.contact {
+			visibility: hidden;
+		}
+
 		#header > ul {
 			color: #ffffff;
 			display: inline-block;
@@ -3692,13 +3696,13 @@
 			}
 
 			@media screen and (min-width: 737px) {
+				#header ul.contact {
+					visibility: visible;
+				}
 				#banner .inner .saleoff {
-					float: right;
-					margin-right: 50px;
 					margin-top: 30px;
 				}
 				#banner .inner .saleoff span {
-					margin-right: 15px;
 					font-size: 20px;
 				}
 				#banner .inner .saleoff span span.sale-number {
@@ -4435,6 +4439,8 @@ img.mfp-img {
 /*Blog*/
 .direct-txt {
   color: #bbb;
+  margin-top: 100px;
+  margin-bottom: 40px;
 }
 .detail-title {
   width: 100%;
@@ -4466,14 +4472,15 @@ img.mfp-img {
   border-top: solid 1px #bbb;
 }
 
-.other-blogs {
-  margin-top: 30px;
+.other-blogs .related {
+	margin-top: 20px !important;
+	padding-left: 1.2em !important;
 }
 .other-blogs h2 {
   color: #ccc;
 }
 .other-blogs-box {
-	width: 30%;
+  width: 30%;
   margin-top: 15px;
   padding: 10px;
 }
@@ -4517,7 +4524,8 @@ img.mfp-img {
 
 /* GBT */
 .input-camera {
-	margin: 20px;
+	margin-bottom: 20px;
+	margin-top: 20px;
 	background-color: #88888840 !important;
 }
 .input-camera:hover {
@@ -4539,18 +4547,71 @@ img.mfp-img {
 	max-width: 800px !important;
 }
 
+#wrapper-camera .step-2, #wrapper-camera .step-3 {
+	visibility: hidden;
+	margin-bottom: 30px;
+}
+.step-number, .step-title {
+	font-size: 18px;
+}
+.step-number {
+	border: 1px solid #ffffff60;
+	background-color: #ffffff20;
+	padding: 5px;
+}
+.f-input ul {
+	padding-left: 0px;
+}
+
+.loading {
+    width: 2rem;
+    height: 2rem;
+    border: 5px solid #f3f3f3;
+    border-top: 6px solid #9c41f2;
+    border-radius: 100%;
+    margin: auto;
+    display: none;
+    animation: spin 1s infinite linear;
+}
+.loading.display {
+    display: block;
+}
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+.res-content {
+	font-size: 18px;
+}
+
+
 @media all and (max-width: 900px) {
 	.f-view-file {
 		max-width: 650px !important;
 	}
-}
-@media all and (max-width: 600px) {
-	.f-view-file {
-		max-width: 550px !important;
+	.direct-txt {
+		margin-top: 30px;
+		margin-bottom: 30px;
+	}
+	#footer {
+		display: none;
 	}
 }
-@media all and (max-width: 400px) {
+@media all and (max-width: 600px) {
+	.rcrop-wrapper {
+		max-width: 95% !important;
+	}
+	.f-view-file {
+		width: 100% !important;
+	}
+	
+}
+/* @media all and (max-width: 400px) {
 	.f-view-file {
 		max-width: 350px !important;
 	}
-}
+} */

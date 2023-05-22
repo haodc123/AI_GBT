@@ -11,7 +11,7 @@
 						</header>
 
 						<div class="saleoff">
-							<a href="exc/camera" class="button big alt scrolly input-camera">Chụp Bài tập bằng Camera</a>
+							<a href="exc/camera" class="button big alt scrolly input-camera">Chụp Bài tập bằng Camera</a><br />
 							<a href="exc/type" class="input-type"><span>Hoặc tự gõ Bài tập &nbsp;>></span></a>
 						</div>
 

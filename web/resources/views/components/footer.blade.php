@@ -3,16 +3,16 @@
                 <div class="inner">
                     <div class="flex flex-3">
                         <div class="col">
-                            <h3>{{ Config::get('constants.general.site_name') }}</h3>
+                            <h4>{{ trans('message.site.title.short') }} Làm được gì</h4>
                             <ul class="alt">
-                                <li><a href="#">Chụp ảnh Thương mại,</a></li>
-                                <li><a href="#">Video Sự kiện,</a></li>
-                                <li><a href="#">Video Quảng bá Mạng xã hội,</a></li>
-                                <li><a href="#">Video Quảng bá Thương hiệu.</a></li>
+                                <li><a href="#">Chụp ảnh để Giải bài tập,</a></li>
+                                <li><a href="#">Giải Bài tập và Học kiến thức từ AI.</a></li>
+                                <li><a href="#">Tìm kiếm lời giải từ cộng đồng,</a></li>
+                                <li><a href="#">Thông tin bổ ích học đường,</a></li>
                             </ul>
                         </div>
                         <div class="col">
-                            <h3>Quy trình và đặc điểm</h3>
+                            <h4></h4>
                             <ul class="alt">
                                 <li><a href="#">Cùng Khách hàng hoàn thiện ý tưởng,</a></li>
                                 <li><a href="#">Xây dựng Kịch bản,</a></li>
@@ -21,7 +21,7 @@
                             </ul>
                         </div>
                         <div class="col">
-                            <h3>Liên hệ</h3>
+                            <h4>Liên hệ</h4>
                             <ul class="alt">
                                 <li><a href="#">410/8 Nguyễn Phước Nguyên, Đà Nẵng,</a></li>
                                 <li><a href="#">038.2040.081,</a></li>
@@ -38,16 +38,18 @@
                         <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
                         <li><a href="#" class="icon fa-snapchat"><span class="label">Snapchat</span></a></li>
                     </ul> -->
-                   / {{ Config::get('constants.general.site_name') }} / &copy; 2022
+                   / {{ trans('message.site.title.short') }} / &copy; 2023
                 </div>
             </footer>
 
         <!-- Scripts -->
             <script src="/js/jquery.min.js"></script>
             <script src="/js/jquery.scrolly.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/jquery.magnific-popup.min.js"></script>
             <script src="/js/skel.min.js"></script>
             <script src="/js/util.js"></script>
             <script src="/js/main.js"></script>
+            <script src="/js/rcrop.min.js"></script> 
 
     </body>
 </html>

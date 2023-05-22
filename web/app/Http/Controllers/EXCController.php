@@ -15,16 +15,24 @@ use Google\Cloud\Vision\V1\ImageAnnotatorClient;
 use Google\Cloud\Vision\V1\ImageContext;
 use Google\Cloud\Vision\V1\InputConfig;
 
+use App\Subjects;
+use App\Exercises;
+use App\Http\Requests\PreExcReq;
+
 class EXCController extends Controller
 {
-
     const BASE_PATH_FILE = 'storage/data/';
+    private $exc;
 
     public function input($input_type) {
 
+        $subjects = new Subjects();
+        $list_all_sub = $subjects->getAllSubjects();
+
         return view('exercises.input', [
             'mode' => 'INPUT',
-            'input_type' => $input_type
+            'input_type' => $input_type,
+            'list_all_sub' => $list_all_sub
         ]);
     }
     // Nc: non crop image upload
@@ -56,10 +64,13 @@ class EXCController extends Controller
     // Cropped image upload
     public function ocr_api_upload(Request $request) {
         if ($request->file('cropped_image')) {
-            $imageUrl = $this->store_file($request);
-            $ocr_text = $this->ocr_api($imageUrl);
+            $image_url = $this->store_file($request);
+            $ocr_text = $this->ocr_api($image_url);
 
-            return response()->json(['ocr_text' => $ocr_text], 200);
+            return response()->json([
+                'ocr_text' => $ocr_text,
+                'image_url' => $image_url
+            ], 200);
         }
         return response()->json(['message' => 'No image uploaded'], 400);
     }
@@ -70,22 +81,29 @@ class EXCController extends Controller
     }
     // End cropped upload
 
-    public function process($input_type, Request $request) {
+    public function process($input_type, PreExcReq $request) {
         // dd($request->all());
         $input = $request->all();
         $req_content = $input['exc_req_content'];
 
         $res_content = $this->chatgpt_api($req_content);
+        $this->save_exc($input_type, $res_content, $request);
 
         return view('exercises.result', [
-            'mode' => 'PROCESS',
+            'mode' => 'RESULT',
             'input_type' => $input_type,
             'req_content' => $req_content,
             'res_content' => $res_content
         ]);
+        // return view('exercises.result', [
+        //         'mode' => 'RESULT',
+        //         'input_type' => '$input_type',
+        //         'req_content' => '$req_content',
+        //         'res_content' => '$res_content abdehfc dbehfeb ựdwedf\n đềgd dưede'
+        //     ]);
     }
     public function chatgpt_api($req_content) {
-        // Call API ChatGPT https://ahmadrosid.com/blog/chatgpt-api-laravel
+        // Call API ChatGPT https://ahmadrosid.com/exc/chatgpt-api-laravel
         $messages = [
             ['role' => 'user', 'content' => $req_content],
         ];
@@ -136,5 +154,24 @@ class EXCController extends Controller
         // -------- end detect file pdf --------
 
         return $textResultImg;
+    }
+
+    public function save_exc($input_type, $res_content, PreExcReq $request) {
+        $validated = $request->validated();
+        
+        $this->do_save_exc($input_type, $res_content, $request);
+                
+    }
+    public function do_save_exc($input_type, $res_content, $request) {
+        $input = $request->all();
+
+        $exc = new Exercises();
+        $exc->exc_content = $input['exc_req_content'];
+        $exc->exc_img_path = $input['exc_img_path'];
+        $exc->exc_answer = $res_content;
+        $exc->exc_grade = $input['exc_req_grade'];
+        $exc->exc_subject = $input['exc_req_subject'];
+        $exc->exc_input_type = $input_type == 'type' ? 2 : 1;
+        $exc->save_exc();
     }
 }

@@ -43,10 +43,9 @@
         <link rel="stylesheet" href="/css/main.css" />
         <link rel="stylesheet" href="/css/rcrop.min.css" />
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script src="/js/rcrop.min.js"></script> 
-
-        <script src="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/jquery.magnific-popup.min.js"></script>
+        <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+        <!-- <script src="/js/rcrop.min.js"></script>  -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/jquery.magnific-popup.min.js"></script> -->
 
     </head>
 
@@ -58,7 +57,7 @@
 
             <header id="header">
 
-                <ul>
+                <ul class="contact">
 
                     <li><a href="/">GBT</a>&nbsp; /</li>
 

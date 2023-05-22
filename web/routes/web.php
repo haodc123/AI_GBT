@@ -30,6 +30,7 @@ Route::post('exc/ocr_api_upload', [EXCController::class, 'ocr_api_upload'])->nam
 Route::post('exc/ocr_api', [EXCController::class, 'ocr_api'])->name('exc.ocr_api');
 
 Route::post('exc/process/{input_type}', [EXCController::class, 'process'])->name('exc.process');
+// Route::get('exc/process/{input_type}', [EXCController::class, 'process'])->name('exc.process');
 // Route::get('exc/{input_type}', function() {
 //     return view('exercises.test2');
 // });

@@ -6,23 +6,12 @@
     <div class="row">
         <div class="col-lg-2 col-md-1 col-sm-1"></div>
         <div class="col-lg-8 col-md-10 col-sm-10 col-xs-12">
-            <br /><br /><br />
+    <!-- mode: {{ $mode ?? 0 }}; input_type: {{ $input_type ?? '' }}; req_content: {{ $req_content ?? '' }} -->
+            
             <h4 class="direct-txt">/ Kết quả</h4>
-            <br />
-
-            <p>
-                mode: {{ $mode ?? 0 }}; input_type: {{ $input_type ?? '' }}; 
-            </p>
-            <p>
-                req_content: {{ $req_content ?? '' }}
-            </p>
-
-            <h2 class="detail-title">
-            Response
-            </h2>
-            <br />
+            
             <div class="blog-box clearfix">
-                <div class="detail-content">
+                <div class="res-content">
 
                 {{ $res_content }}
 
@@ -48,11 +37,9 @@
             </div>
             <!-- end row -->
             <div class="row">
-                <div class="col-lg-1 col-md-1"></div>
                 <div class="other-blogs col-lg-10 col-md-10 col-sm-12">
                     <div class="row">
-                        <div class="col-lg-1 col-md-1"></div>
-                        <h2>Bài tập gần đây</h2>
+                        <h4 class="direct-txt related">/ Có thể bạn quan tâm</h4>
                     </div>
                     <div class="row">
                         
