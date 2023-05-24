@@ -10,6 +10,8 @@ class Exercises extends Model
     use SoftDeletes;
 
     protected $table = 'exercises';
+    const PER_PAGE_LESS = 10;
+    const PER_PAGE_MIDDLE = 20;
 
     // below is no need because default
     // protected $primaryKey = 'id';
@@ -17,7 +19,7 @@ class Exercises extends Model
     // const CREATED_AT = 'created_at';
     // const UPDATED_AT = 'updated_at';
 
-    public function getAllExc($n=20) {
+    public function getAllExc($n=Exercises::PER_PAGE_MIDDLE) {
         return self::take($n)->get();
     }
 
@@ -27,6 +29,31 @@ class Exercises extends Model
 
     public function getSomeExc($n) {
         return self::orderBy('id', 'desc')->take($n)->get();
+    }
+
+    public function getExcFromSubjectAndGrade($grade, $subject, $n=Exercises::PER_PAGE_LESS) {
+        if (isNotDefine($grade))
+            if (isNotDefine($subject))
+                return self::orderBy('id', 'desc')->take($n)->get();
+            else
+                return self::where('exc_subject', $subject)
+                    ->orderBy('id', 'DESC')
+                    ->paginate($n);
+        else
+            if (isNotDefine($subject))
+                return self::where('exc_grade', $grade)
+                    ->orderBy('id', 'DESC')
+                    ->paginate($n);
+            else
+                return self::where('exc_subject', $subject)
+                    ->where('exc_grade', $grade)
+                    ->orderBy('id', 'DESC')
+                    ->paginate($n);
+    }
+
+    public function getExcFromId($id) {
+        return self::where('id', $id)
+                    ->first();
     }
 
     public function del($id) {

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
+use Session;
 
 use Google\Cloud\Vision\V1\AnnotateFileRequest;
 use Google\Cloud\Vision\V1\Feature;
@@ -23,16 +24,62 @@ class EXCController extends Controller
 {
     const BASE_PATH_FILE = 'storage/data/';
     private $exc;
+    private $sub;
 
-    public function input($input_type) {
+    public function input($input_type, $grade, $subject_i) {
 
-        $subjects = new Subjects();
-        $list_all_sub = $subjects->getAllSubjects();
+        $sub = new Subjects();
+        $list_all_sub = $sub->getAllSubject();
+
+        Session::put('grade', $grade);
+        Session::put('subject_i', $subject_i);
+        // $grade = Session::get('grade');
+        // $subject_i = Session::get('subject_i');
 
         return view('exercises.input', [
             'mode' => 'INPUT',
+            'grade' => $grade,
+            'subject_i' => $subject_i,
             'input_type' => $input_type,
             'list_all_sub' => $list_all_sub
+        ]);
+    }
+    public function show(Request $request) {
+        $input = $request->all();
+        $exc_id = $request->exc_i;
+
+        $exc = new Exercises();
+        $sub = new Subjects();
+        $exercise = $exc->getExcFromId($exc_id);
+        $grade = $exercise->exc_grade;
+        $subject_id = $exercise->exc_subject;
+        $list_all_sub_part = $sub->getAllSubjectAndPart();
+        $list_exc_related = $exc->getExcFromSubjectAndGrade($grade, $subject_id, 20);
+        
+
+        return view('exercises.show', [
+            'exercise' => $exercise,
+            'grade' => $grade,
+            'list_all_sub_part' => $list_all_sub_part,
+            'list_exc_related' => $list_exc_related
+        ]);
+    }
+    public function list($grade, $subject_s) {
+        // dd($input = $request->all());
+        // $grade = $request->grade;
+        // $subject_slug = $request->subject_s;
+
+        $sub = new Subjects();
+        $exc = new Exercises();
+        $subject_id = isNotDefine($subject_s) ? 0 : $sub->getSubjectFromSlug($subject_s)->id;
+        $list_all_sub_part = $sub->getAllSubjectAndPart();
+        $list_exc = $exc->getExcFromSubjectAndGrade($grade, $subject_id, 20);
+
+        return view('exercises.list', [
+            'grade' => $grade,
+            'subject_s' => $subject_s,
+            'list_all_sub_part' => $list_all_sub_part,
+            'list_exc' => $list_exc
         ]);
     }
     // Nc: non crop image upload
@@ -82,19 +129,44 @@ class EXCController extends Controller
     // End cropped upload
 
     public function process($input_type, PreExcReq $request) {
-        // dd($request->all());
         $input = $request->all();
         $req_content = $input['exc_req_content'];
+        // $res_content = $this->chatgpt_api($req_content);
+        $res_content = 'result for '.$req_content;
 
-        $res_content = $this->chatgpt_api($req_content);
+        $exc = new Exercises();
+        $sub = new Subjects();
+        $grade = $input['exc_req_grade'];
+        $subject_id = $input['exc_req_subject'];
+        if (isNotDefine($subject_id))
+            $subject_slug = '';
+        else
+            $subject_slug = $sub->getSubjectFromId($subject_id)->title_slug;
+        $list_all_sub_part = $sub->getAllSubjectAndPart();
+        $list_exc_related = $exc->getExcFromSubjectAndGrade($grade, $subject_id);
+
         $this->save_exc($input_type, $res_content, $request);
 
         return view('exercises.result', [
             'mode' => 'RESULT',
             'input_type' => $input_type,
             'req_content' => $req_content,
-            'res_content' => $res_content
+            'res_content' => $res_content,
+            'grade' => $grade,
+            'subject_s' => $subject_slug,
+            'list_all_sub_part' => $list_all_sub_part,
+            'list_exc_related' => $list_exc_related
         ]);
+        // If Grade == 0, display:
+        //     - All grade,
+        //     - All subject: name, not grade
+        //     - All part belong subject: name, not grade
+        //     - Some exc belong subject
+        // If Grade != 0, display:
+        //     - All subject: name + grade
+        //     - All part belong subject, grade (or grade null): name + grade
+        //     - Some exc belong subject + grade
+
         // return view('exercises.result', [
         //         'mode' => 'RESULT',
         //         'input_type' => '$input_type',
@@ -102,6 +174,7 @@ class EXCController extends Controller
         //         'res_content' => '$res_content abdehfc dbehfeb ựdwedf\n đềgd dưede'
         //     ]);
     }
+
     public function chatgpt_api($req_content) {
         // Call API ChatGPT https://ahmadrosid.com/exc/chatgpt-api-laravel
         $messages = [
@@ -167,11 +240,12 @@ class EXCController extends Controller
 
         $exc = new Exercises();
         $exc->exc_content = $input['exc_req_content'];
-        $exc->exc_img_path = $input['exc_img_path'];
+        $exc->exc_img_path = $input['exc_img_path'] ?? '';
         $exc->exc_answer = $res_content;
         $exc->exc_grade = $input['exc_req_grade'];
         $exc->exc_subject = $input['exc_req_subject'];
         $exc->exc_input_type = $input_type == 'type' ? 2 : 1;
+        $exc->exc_view = 1;
         $exc->save_exc();
     }
 }

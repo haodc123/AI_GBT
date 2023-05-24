@@ -3664,7 +3664,7 @@
 		-webkit-justify-content: center;
 		-ms-justify-content: center;
 		justify-content: center;
-		background-image: url("../../images/banner.jpg");
+		/* background-image: url("../../images/banner.jpg"); */
 		background-position: center;
 		background-size: cover;
 		background-repeat: no-repeat;
@@ -3675,6 +3675,10 @@
 		text-align: center;
 		overflow: hidden;
 	}
+
+		#banner ul li {
+			margin-top: 20px;
+		}
 
 		#banner .inner {
 			-moz-transform: scale(1.0);
@@ -3690,6 +3694,9 @@
 			z-index: 2;
 		}
 
+			#banner .inner .saleoff a {
+				margin-right: 30px;
+			}
 			#banner .inner .saleoff span {
 				font-style: italic;
 				color: #fff;
@@ -3700,7 +3707,7 @@
 					visibility: visible;
 				}
 				#banner .inner .saleoff {
-					margin-top: 30px;
+					margin-top: 10px;
 				}
 				#banner .inner .saleoff span {
 					font-size: 20px;
@@ -4587,7 +4594,21 @@ img.mfp-img {
 .res-content {
 	font-size: 18px;
 }
-
+.list-subject, .list-exercise, .list-grade {
+	width: 90%;
+	margin: auto;
+	margin-left: 20px;
+	margin-bottom: 20px;
+	padding-left: 0px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #444;
+	font-size: 16px;
+}
+.list-subject li, .list-exercise li, .list-grade li {
+	display: inline;
+	margin: 10px;
+	margin-left: 0px;
+}
 
 @media all and (max-width: 900px) {
 	.f-view-file {

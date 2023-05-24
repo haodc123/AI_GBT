@@ -93,7 +93,7 @@
 
             displayLoading();
 
-            fetch("../exc/ocr_api_upload", {
+            fetch("/exc/ocr_api_upload", {
                 method: "POST",
                 body: formData,
             })
@@ -166,17 +166,18 @@
                         </li>
                         <li>
                             <select name="exc_req_grade">
-                                <option value="0">Lớp: Chưa phân loại</option>
+                                <option value="0">Lớp: Chưa xác định</option>
                                 @for ($i = 1; $i <= 12; $i++)
-                                    <option value="{{ $i }}">Lớp {{ $i }}</option>
+                                    <option value="{{ $i }}" {{ !isNotDefine($grade) && $grade == $i ? 'selected' : '' }}>Lớp {{ $i }}</option>
                                 @endfor
+                                <option value="13">Đại học - Khác</option>
                             </select>
                         </li><br />
                         <li>
                             <select name="exc_req_subject">
-                                <option value="0">Môn học: Chưa phân loại</option>
+                                <option value="0">Môn học: Chưa xác định</option>
                                 @foreach ($list_all_sub as $sub)
-                                    <option value="{{ $sub->id }}">{{ $sub->title }}</option>
+                                    <option value="{{ $sub->id }}" {{ !isNotDefine($subject_i) && $subject_i == $sub->id ? 'selected' : '' }}>{{ $sub->title }}</option>
                                 @endforeach
                             </select>
                         </li><br />
@@ -203,6 +204,23 @@
                         <li>
                             <textarea cols="100" rows="8" name="exc_req_content" id="exc_req_content" placeholder="Nhập Bài tập..." required="required"></textarea>
                         </li>
+                        <li>
+                            <select name="exc_req_grade">
+                                <option value="0">Chọn lớp: Chưa xác định</option>
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ !isNotDefine($grade) && $grade == $i ? 'selected' : '' }}>Lớp {{ $i }}</option>
+                                @endfor
+                                <option value="13">Đại học - Khác</option>
+                            </select>
+                        </li><br />
+                        <li>
+                            <select name="exc_req_subject">
+                                <option value="0">Chọn môn học: Chưa xác định</option>
+                                @foreach ($list_all_sub as $sub)
+                                    <option value="{{ $sub->id }}" {{ !isNotDefine($subject_i) && $subject_i == $sub->id ? 'selected' : '' }}>{{ $sub->title }}</option>
+                                @endforeach
+                            </select>
+                        </li><br />
                         <li>
                             <div class="reserve-book-btn text-center">
                                 <button class="hvr-underline-from-center" type="submit" value="SEND" id="submit">Gửi đi</button>

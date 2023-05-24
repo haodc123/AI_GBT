@@ -10,8 +10,7 @@ class PreExcReq extends FormRequest
     public function rules()
     {
         return [
-            'exc_req_content' => 'required',
-            'exc_img_path' => 'required'
+            'exc_req_content' => 'required'
         ];
     }
 

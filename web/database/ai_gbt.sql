@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 21, 2023 at 07:12 PM
+-- Generation Time: Jun 04, 2023 at 05:56 AM
 -- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- PHP Version: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -87,12 +87,21 @@ CREATE TABLE `exercises` (
   `exc_grade` int(11) NOT NULL DEFAULT 0,
   `exc_subject` varchar(50) NOT NULL DEFAULT '0',
   `exc_part` int(11) DEFAULT NULL,
+  `exc_view` int(11) NOT NULL DEFAULT 0,
   `exc_user_id` int(11) DEFAULT NULL,
-  `exc_input_type` int(1) NOT NULL DEFAULT 0 COMMENT '0: type; 1: camera',
+  `exc_input_type` int(1) NOT NULL DEFAULT 0 COMMENT '1: camera; 2: type',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `deleted_at` datetime NOT NULL
+  `deleted_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `exercises`
+--
+
+INSERT INTO `exercises` (`id`, `exc_content`, `exc_img_path`, `exc_answer`, `exc_grade`, `exc_subject`, `exc_part`, `exc_view`, `exc_user_id`, `exc_input_type`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'abc', '', 'result for abc', 10, '11', NULL, 1, NULL, 2, '2023-06-04 03:50:04', '2023-06-04 03:50:04', NULL),
+(2, '1+1=??', 'ERYqpREYpdVVVmzx8Lsxl2i8h35JBa0ClqFerTIj.png', 'result for 1+1=??', 2, '1', NULL, 1, NULL, 1, '2023-06-04 03:53:21', '2023-06-04 03:53:21', NULL);
 
 -- --------------------------------------------------------
 
@@ -103,13 +112,37 @@ CREATE TABLE `exercises` (
 CREATE TABLE `subject_part` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `grade` int(11) NOT NULL,
+  `title_slug` varchar(255) NOT NULL,
+  `grade` int(11) DEFAULT NULL,
   `type` int(11) NOT NULL DEFAULT 1 COMMENT '1:subject; 2: part',
   `sub_parent` int(11) DEFAULT NULL COMMENT 'only if it''s part',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `deleted_at` datetime NOT NULL
+  `deleted_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `subject_part`
+--
+
+INSERT INTO `subject_part` (`id`, `title`, `title_slug`, `grade`, `type`, `sub_parent`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'Toán', 'Toan', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(2, 'Lý', 'Ly', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(3, 'Hoá', 'Hoa', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(4, 'Sinh', 'Sinh', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(5, 'Anh văn', 'Anh-van', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(6, 'Ngữ văn', 'Ngu-van', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(7, 'Lịch sử', 'Lich-su', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(8, 'Địa lý', 'Dia-ly', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(9, 'Tin học', 'Tin-hoc', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(10, 'Kỹ thuật', 'Ky-thuat', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(11, 'Tiếng Pháp', 'Tieng-phap', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(12, 'Tiếng Hàn', 'Tieng-han', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(13, 'Tiếng Nhật', 'Tieng-nhat', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(14, 'Tiếng Trung', 'Tieng-trung', NULL, 1, NULL, '2023-06-04 05:35:16', '2023-06-04 05:35:16', NULL),
+(15, 'Quang học', 'Quang-hoc', NULL, 2, 2, '2023-06-04 05:45:39', '2023-06-04 05:45:39', NULL),
+(16, 'Tích phân', 'Tich-phan', 12, 2, 1, '2023-06-04 05:45:39', '2023-06-04 05:45:39', NULL),
+(17, 'Toán test', 'Toan', NULL, 1, NULL, '2023-06-04 05:47:01', '2023-06-04 05:47:01', '2023-06-04 10:47:01');
 
 -- --------------------------------------------------------
 
@@ -209,13 +242,13 @@ ALTER TABLE `blogs_cat`
 -- AUTO_INCREMENT for table `exercises`
 --
 ALTER TABLE `exercises`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `subject_part`
 --
 ALTER TABLE `subject_part`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `users`
